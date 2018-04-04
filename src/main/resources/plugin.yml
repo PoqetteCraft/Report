@@ -1,0 +1,43 @@
+name: ${name}
+version: ${version}
+main: ${groupId}.${artifactId}.${name}Plugin
+description: ${description}
+author: ${author}
+commands:
+    report:
+        description: Base command
+        usage: /<command> [file|read|resolve|unresolve|comment|teleport|gui] [id|message]
+        aliases: [read, resolve, unresolve, comment, gotoreport, rgui]
+permissions:
+    report.file:
+        description: Access to /report file <message>
+        default: true
+    report.read:
+        description: Access to /report read [id] and the admin alerts
+        default: op
+    report.resolve:
+        description: Access to /report resolve <id>
+        default: op
+    report.unresolve:
+        description: Access to /report unresolve <id>
+        default: op
+    report.teleport:
+        description: Access to /report teleport
+        default: op
+    report.comment:
+        description: Access to /report comment
+        default: op
+    report.gui:
+        description: Access to /report gui
+        default: op
+    report.*:
+        description: Master permission
+        default: op
+        children:
+            report.file: true
+            report.read: true
+            report.resolve: true
+            report.unresolve: true
+            report.teleport: true
+            report.comment: true
+            report.gui: true
