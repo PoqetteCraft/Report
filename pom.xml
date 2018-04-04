@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pocketkid2</groupId>
-	<artifactId>Report</artifactId>
+	<artifactId>report</artifactId>
 	<version>0.0.1-ALPHA</version>
 	<name>Report</name>
 	<description>A reporting plugin for Minecraft servers</description>

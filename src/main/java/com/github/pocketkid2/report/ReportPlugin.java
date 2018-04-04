@@ -1,3 +1,5 @@
+package com.github.pocketkid2.report;
+
 import com.github.pocketkid2.database.Database;
 import com.github.pocketkid2.database.DatabasePlugin;
 
