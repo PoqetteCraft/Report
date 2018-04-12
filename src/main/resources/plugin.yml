@@ -3,6 +3,7 @@ version: ${version}
 main: ${groupId}.${artifactId}.${name}Plugin
 description: ${description}
 author: ${author}
+depend: [Database]
 commands:
     report:
         description: Base command
