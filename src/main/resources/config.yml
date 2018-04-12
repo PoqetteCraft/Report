@@ -1,0 +1,12 @@
+# ----------------------------------------
+#   Configuration File for Report plugin
+# ----------------------------------------
+
+# The minimum levenshtein difference for the spam filter
+min-distance: 6
+
+# The maximum string length for reports and comments
+max-length: 100
+
+# The minimum number of words required for a report
+min-words: 3
