@@ -51,7 +51,7 @@ public class ReportCommand implements CommandExecutor {
 						List<Report> reports = plugin.getReportManager().read();
 						sender.sendMessage(String.format("Unresolved reports (%d): ", reports.size()));
 						for (Report r : reports) {
-							sender.sendMessage(String.format("ID: %d, Playername: %d", r.getId(), Bukkit.getOfflinePlayer(r.getFiler()).getName()));
+							sender.sendMessage(String.format("ID: %d, Playername: %s", r.getId(), Bukkit.getOfflinePlayer(r.getFiler()).getName()));
 						}
 					} else if (args.length == 2) {
 						// Grab a certain report
