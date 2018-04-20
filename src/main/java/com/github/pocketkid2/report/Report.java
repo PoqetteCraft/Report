@@ -1,6 +1,11 @@
 package com.github.pocketkid2.report;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import org.bukkit.Location;
 
 /**
  * An unmutable class representing a retrieved Report from the database. Each
@@ -14,51 +19,127 @@ import java.util.UUID;
 public class Report {
 
 	// Initial conditions
-	private final UUID filer;
+	private final UUID reporter;
 	private final String reportMessage;
-	// TODO file time and location
+	private final Timestamp reportTime;
+	private final Location reportLoc;
 
 	// Working conditions
 	private final int id;
 	private final boolean resolved;
-	// TODO comments
+	private final List<Comment> comments;
 
 	// Final conditions
-	// TODO resolution location, time, uuid, and optional message
+	private final UUID resolver;
+	private final String resolveMessage;
+	private final Timestamp resolveTime;
+	private final Location resolveLoc;
 
 	/**
-	 * Constructor for reading from database
-	 *
-	 * @param uuid
-	 *            The filer UUID from the database
-	 * @param message
-	 *            The message string from the database
-	 * @param resolved
-	 *            The resolution status from the database
+	 * @param reporter
+	 * @param reportMessage
+	 * @param reportTime
+	 * @param reportLoc
 	 * @param id
-	 *            The int (primary key) from the database
+	 * @param resolved
+	 * @param resolver
+	 * @param resolveMessage
+	 * @param resolveTime
+	 * @param resolveLoc
 	 */
-	public Report(int id, UUID uuid, String message, boolean resolved) {
-		filer = uuid;
-		reportMessage = message;
-		this.resolved = resolved;
+	public Report(UUID reporter, String reportMessage, Timestamp reportTime, Location reportLoc, int id, boolean resolved, UUID resolver, String resolveMessage, Timestamp resolveTime, Location resolveLoc) {
+		this.reporter = reporter;
+		this.reportMessage = reportMessage;
+		this.reportTime = reportTime;
+		this.reportLoc = reportLoc;
 		this.id = id;
+		this.resolved = resolved;
+		comments = new ArrayList<Comment>();
+		this.resolver = resolver;
+		this.resolveMessage = resolveMessage;
+		this.resolveTime = resolveTime;
+		this.resolveLoc = resolveLoc;
 	}
 
-	public UUID getFiler() {
-		return filer;
+	/**
+	 * @return the reporter
+	 */
+	public UUID getReporter() {
+		return reporter;
 	}
 
+	/**
+	 * @return the reportMessage
+	 */
 	public String getReportMessage() {
 		return reportMessage;
 	}
 
+	/**
+	 * @return the reportTime
+	 */
+	public Timestamp getReportTime() {
+		return reportTime;
+	}
+
+	/**
+	 * @return the reportLoc
+	 */
+	public Location getReportLoc() {
+		return reportLoc;
+	}
+
+	/**
+	 * @return the id
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * @return the resolved
+	 */
 	public boolean isResolved() {
 		return resolved;
+	}
+
+	/**
+	 * @return the comments
+	 */
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	/**
+	 * @return the resolver
+	 */
+	public UUID getResolver() {
+		return resolver;
+	}
+
+	/**
+	 * @return the resolveMessage
+	 */
+	public String getResolveMessage() {
+		return resolveMessage;
+	}
+
+	/**
+	 * @return the resolveTime
+	 */
+	public Timestamp getResolveTime() {
+		return resolveTime;
+	}
+
+	/**
+	 * @return the resolveLoc
+	 */
+	public Location getResolveLoc() {
+		return resolveLoc;
+	}
+
+	public void addComment(Comment s) {
+		comments.add(s);
 	}
 
 }

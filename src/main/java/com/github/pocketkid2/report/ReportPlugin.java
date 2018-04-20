@@ -18,7 +18,7 @@ public class ReportPlugin extends DatabasePlugin {
 
 		if (Database.register(this)) {
 			manager.initStatements();
-			manager.initTable();
+			manager.initTables();
 			getLogger().info("Done!");
 		} else {
 			getLogger().warning("Finished registering but currently disabled. Plugin will come online when the database connection is re-established.");
