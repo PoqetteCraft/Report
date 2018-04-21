@@ -1,5 +1,7 @@
 package com.github.pocketkid2.report;
 
+import org.bukkit.Bukkit;
+
 import com.github.pocketkid2.database.Database;
 import com.github.pocketkid2.database.DatabasePlugin;
 
@@ -15,6 +17,7 @@ public class ReportPlugin extends DatabasePlugin {
 		settings = new Settings(getConfig());
 		getCommand("report").setExecutor(new ReportCommand(this));
 		manager = new ReportManager(this);
+		Bukkit.getPluginManager().registerEvents(new GUIListener(this), this);
 
 		if (Database.register(this)) {
 			manager.initStatements();

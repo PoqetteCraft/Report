@@ -16,15 +16,15 @@ import com.github.pocketkid2.database.Database;
 
 public class ReportManager {
 
-	private static final String CREATE_PRIMARY_TABLE = "CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTO_INCREMENT, resolved BOOLEAN DEFAULT false, reporter CHAR(36), reportTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reportLoc TEXT, reportMessage TEXT, resolver CHAR(36), resolveTime TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP, resolveLoc TEXT, resolveMessage TEXT);";
+	private static final String CREATE_PRIMARY_TABLE = "CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTO_INCREMENT, resolved BOOLEAN DEFAULT false, reporter CHAR(36), reportTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reportLoc TEXT, reportMessage TEXT, resolver CHAR(36), resolveTime TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP);";
 
-	private static final String CREATE_COMMENT_TABLE = "CREATE TABLE IF NOT EXISTS report_comments (id INTEGER, commenter CHAR(36), commentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, comment TEXT);";
+	private static final String CREATE_COMMENT_TABLE = "CREATE TABLE IF NOT EXISTS report_comments (id INTEGER, commenter CHAR(36), comment TEXT);";
 
 	private static final String INSERT_REPORT = "INSERT INTO reports (reporter, reportLoc, reportMessage) VALUES (?, ?, ?);";
 
 	private static final String INSERT_COMMENT = "INSERT INTO report_comments (id, commenter, comment) VALUES (?, ?, ?);";
 
-	private static final String UPDATE_RESOLVE = "UPDATE reports SET resolved = true, resolver = ?, resolveTime = CURRENT_TIMESTAMP, resolveLoc = ?, resolveMessage = ? WHERE id = ?;";
+	private static final String UPDATE_RESOLVE = "UPDATE reports SET resolved = true, resolver = ?, resolveTime = CURRENT_TIMESTAMP WHERE id = ?;";
 
 	private static final String UPDATE_UNRESOLVE = "UPDATE reports SET resolved = false where id = ?;";
 
@@ -127,20 +127,24 @@ public class ReportManager {
 	public void resolve(int id, Player player, String message) {
 		try {
 			updateResolve.setString(1, player.getUniqueId().toString());
-			updateResolve.setString(2, Util.locToString(player.getLocation()));
-			updateResolve.setString(3, message);
-			updateResolve.setInt(4, id);
+			updateResolve.setInt(2, id);
 			updateResolve.executeUpdate();
+			if ((message != null) && (message.length() > 1)) {
+				comment(id, player, message);
+			}
 		} catch (SQLException e) {
 			plugin.getLogger().severe("Error resolving report " + id + " by player " + player.getName());
 			e.printStackTrace();
 		}
 	}
 
-	public void unresolve(int id) {
+	public void unresolve(int id, Player player, String message) {
 		try {
 			updateUnresolve.setInt(1, id);
 			updateUnresolve.executeUpdate();
+			if ((message != null) && (message.length() > 1)) {
+				comment(id, player, message);
+			}
 		} catch (SQLException e) {
 			plugin.getLogger().severe("Error unresolving report " + id);
 			e.printStackTrace();
@@ -158,18 +162,7 @@ public class ReportManager {
 		try (ResultSet rs = selectUnresolved.executeQuery()) {
 			while (rs.next()) {
 				Report report = parse(rs);
-				try (ResultSet comments = selectCommentById.executeQuery()) {
-					while (comments.next()) {
-						UUID uuid = UUID.fromString(comments.getString("commenter"));
-						Timestamp time = comments.getTimestamp("commentTime");
-						String message = comments.getString("comment");
-
-						report.addComment(new Comment(message, uuid, time));
-					}
-				} catch (SQLException e) {
-					plugin.getLogger().severe("Error reading comments with ID " + report.getId());
-					e.printStackTrace();
-				}
+				report.addComments(getComments(report.getId()));
 				reports.add(report);
 			}
 
@@ -194,18 +187,7 @@ public class ReportManager {
 		try (ResultSet rs = selectReportByPlayer.executeQuery()) {
 			while (rs.next()) {
 				Report report = parse(rs);
-				try (ResultSet comments = selectCommentById.executeQuery()) {
-					while (comments.next()) {
-						UUID uuid = UUID.fromString(comments.getString("commenter"));
-						Timestamp time = comments.getTimestamp("commentTime");
-						String message = comments.getString("comment");
-
-						report.addComment(new Comment(message, uuid, time));
-					}
-				} catch (SQLException e) {
-					plugin.getLogger().severe("Error reading comments with ID " + report.getId());
-					e.printStackTrace();
-				}
+				report.addComments(getComments(report.getId()));
 				reports.add(report);
 			}
 		} catch (SQLException e) {
@@ -237,25 +219,35 @@ public class ReportManager {
 				return null;
 			}
 			report = parse(rs);
-			selectCommentById.setInt(1, id);
-			try (ResultSet comments = selectCommentById.executeQuery()) {
-				while (comments.next()) {
-					UUID uuid = UUID.fromString(comments.getString("commenter"));
-					Timestamp time = comments.getTimestamp("commentTime");
-					String message = comments.getString("comment");
-
-					report.addComment(new Comment(message, uuid, time));
-				}
-			} catch (SQLException e) {
-				plugin.getLogger().severe("Error reading comments with ID " + id);
-				e.printStackTrace();
-			}
+			report.addComments(getComments(report.getId()));
 		} catch (SQLException e) {
 			plugin.getLogger().severe("Error reading report with ID " + id);
 			e.printStackTrace();
 		}
 
 		return report;
+	}
+
+	public List<Comment> getComments(int id) {
+		List<Comment> list = new ArrayList<Comment>();
+		try {
+			selectCommentById.setInt(1, id);
+		} catch (SQLException e1) {
+			plugin.getLogger().severe("Error preparing comment statement for id " + id);
+			e1.printStackTrace();
+		}
+		try (ResultSet comments = selectCommentById.executeQuery()) {
+			while (comments.next()) {
+				UUID uuid = UUID.fromString(comments.getString("commenter"));
+				String message = comments.getString("comment");
+
+				list.add(new Comment(message, uuid));
+			}
+		} catch (SQLException e) {
+			plugin.getLogger().severe("Error reading comments with ID " + id);
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 	/*
@@ -273,12 +265,13 @@ public class ReportManager {
 			Timestamp reportTime = rs.getTimestamp("reportTime");
 			Location reportLoc = Util.stringToLoc(rs.getString("reportLoc"));
 
-			UUID resolver = UUID.fromString(rs.getString("resolver"));
-			String resolveMessage = rs.getString("resolveMessage");
+			String s = rs.getString("resolver");
+			UUID resolver = null;
+			if (s != null) {
+				resolver = UUID.fromString(s);
+			}
 			Timestamp resolveTime = rs.getTimestamp("resolveTime");
-			Location resolveLoc = Util.stringToLoc(rs.getString("resolveLoc"));
-
-			return new Report(reporter, reportMessage, reportTime, reportLoc, id, resolved, resolver, resolveMessage, resolveTime, resolveLoc);
+			return new Report(reporter, reportMessage, reportTime, reportLoc, id, resolved, resolver, resolveTime);
 
 		} catch (SQLException e) {
 			plugin.getLogger().severe("Error reading report (no comments)");

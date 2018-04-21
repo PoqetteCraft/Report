@@ -83,7 +83,9 @@ public class ReportCommand implements CommandExecutor {
 			player.sendMessage(Messages.NO_PERM);
 			return;
 		}
-		player.sendMessage("Not implemented yet!");
+
+		GUI.createMainMenu(plugin, player);
+		player.openInventory(GUI.main);
 	}
 
 	private void teleport(Player player, String[] args) {
@@ -93,7 +95,7 @@ public class ReportCommand implements CommandExecutor {
 			return;
 		}
 
-		if (args.length > 1) {
+		if (args.length > 0) {
 			try {
 				int id = Integer.parseInt(args[0]);
 				Report r = plugin.getReportManager().read(id);
@@ -117,7 +119,7 @@ public class ReportCommand implements CommandExecutor {
 			return;
 		}
 
-		if (args.length > 1) {
+		if (args.length > 0) {
 			try {
 				int id = Integer.parseInt(args[0]);
 				plugin.getReportManager().comment(id, player, String.join(" ", shifted(args)));
@@ -137,10 +139,10 @@ public class ReportCommand implements CommandExecutor {
 			return;
 		}
 
-		if (args.length > 1) {
+		if (args.length > 0) {
 			try {
 				int id = Integer.parseInt(args[0]);
-				plugin.getReportManager().unresolve(id);
+				plugin.getReportManager().unresolve(id, player, String.join(" ", shifted(args)));
 				player.sendMessage(String.format(Messages.UNRESOLVE_SUCCESSFUL, id));
 			} catch (NumberFormatException e) {
 				player.sendMessage(Messages.INVALID_ID);
@@ -157,7 +159,7 @@ public class ReportCommand implements CommandExecutor {
 			return;
 		}
 
-		if (args.length > 1) {
+		if (args.length > 0) {
 			try {
 				int id = Integer.parseInt(args[0]);
 				plugin.getReportManager().resolve(id, player, String.join(" ", shifted(args)));
@@ -178,14 +180,14 @@ public class ReportCommand implements CommandExecutor {
 		}
 
 		// Check if there is an id
-		if (args.length > 1) {
+		if (args.length > 0) {
 			try {
 				int id = Integer.parseInt(args[0]);
 				Report r = plugin.getReportManager().read(id);
 				if (r == null) {
 					player.sendMessage(Messages.NO_REPORT);
 				} else {
-					player.sendMessage(String.format(Messages.REPORT_TITLE, r.getId(), Bukkit.getOfflinePlayer(r.getReporter()), Util.durationFormat(Duration.between(r.getReportTime().toLocalDateTime(), LocalDateTime.now()))));
+					player.sendMessage(String.format(Messages.REPORT_TITLE, r.getId(), Bukkit.getOfflinePlayer(r.getReporter()).getName(), Util.durationFormat(Duration.between(r.getReportTime().toLocalDateTime(), LocalDateTime.now()))));
 					player.sendMessage(String.format(Messages.REPORT_DETAILS, r.getReportMessage()));
 					if (r.isResolved()) {
 						player.sendMessage(String.format(Messages.REPORT_RESOLVED, Bukkit.getOfflinePlayer(r.getResolver()).getName(), Util.durationFormat(Duration.between(r.getResolveTime().toLocalDateTime(), LocalDateTime.now()))));
@@ -211,7 +213,7 @@ public class ReportCommand implements CommandExecutor {
 			if (size > 0) {
 				player.sendMessage(String.format(Messages.REPORT_COUNT, size));
 				for (Report r : reports) {
-					player.sendMessage(String.format(Messages.REPORT_TITLE, r.getId(), Bukkit.getOfflinePlayer(r.getReporter()), Util.durationFormat(Duration.between(r.getReportTime().toLocalDateTime(), LocalDateTime.now()))));
+					player.sendMessage(String.format(Messages.REPORT_TITLE, r.getId(), Bukkit.getOfflinePlayer(r.getReporter()).getName(), Util.durationFormat(Duration.between(r.getReportTime().toLocalDateTime(), LocalDateTime.now()))));
 				}
 			} else {
 				player.sendMessage(Messages.NO_REPORTS);

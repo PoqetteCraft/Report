@@ -31,9 +31,7 @@ public class Report {
 
 	// Final conditions
 	private final UUID resolver;
-	private final String resolveMessage;
 	private final Timestamp resolveTime;
-	private final Location resolveLoc;
 
 	/**
 	 * @param reporter
@@ -47,7 +45,7 @@ public class Report {
 	 * @param resolveTime
 	 * @param resolveLoc
 	 */
-	public Report(UUID reporter, String reportMessage, Timestamp reportTime, Location reportLoc, int id, boolean resolved, UUID resolver, String resolveMessage, Timestamp resolveTime, Location resolveLoc) {
+	public Report(UUID reporter, String reportMessage, Timestamp reportTime, Location reportLoc, int id, boolean resolved, UUID resolver, Timestamp resolveTime) {
 		this.reporter = reporter;
 		this.reportMessage = reportMessage;
 		this.reportTime = reportTime;
@@ -56,9 +54,7 @@ public class Report {
 		this.resolved = resolved;
 		comments = new ArrayList<Comment>();
 		this.resolver = resolver;
-		this.resolveMessage = resolveMessage;
 		this.resolveTime = resolveTime;
-		this.resolveLoc = resolveLoc;
 	}
 
 	/**
@@ -118,28 +114,18 @@ public class Report {
 	}
 
 	/**
-	 * @return the resolveMessage
-	 */
-	public String getResolveMessage() {
-		return resolveMessage;
-	}
-
-	/**
 	 * @return the resolveTime
 	 */
 	public Timestamp getResolveTime() {
 		return resolveTime;
 	}
 
-	/**
-	 * @return the resolveLoc
-	 */
-	public Location getResolveLoc() {
-		return resolveLoc;
-	}
-
 	public void addComment(Comment s) {
 		comments.add(s);
+	}
+
+	public void addComments(List<Comment> c) {
+		comments.addAll(c);
 	}
 
 }

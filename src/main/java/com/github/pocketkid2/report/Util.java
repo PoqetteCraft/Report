@@ -39,6 +39,9 @@ public class Util {
 		if (minutes > 0) {
 			s.add(String.format("%s min", minutes));
 		}
-		return String.join(" ", s);
+		if (minutes == 0) {
+			return "just now";
+		}
+		return String.join(" ", s) + " ago";
 	}
 }

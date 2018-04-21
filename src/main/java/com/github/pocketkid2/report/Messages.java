@@ -1,6 +1,6 @@
 package com.github.pocketkid2.report;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 
 public interface Messages {
 
@@ -12,9 +12,9 @@ public interface Messages {
 	String REPORT_FILED = "Your report has been filed! Please wait for an admin to respond.";
 	String INVALID_ID = ChatColor.RED + "Invalid report ID!";
 	String NO_REPORT = ChatColor.RED + "No report with that ID exists!";
-	String REPORT_TITLE = "Report ID %d: by player %s %s ago";
+	String REPORT_TITLE = "Report ID %d: by player %s filed %s";
 	String REPORT_DETAILS = "Details: %s";
-	String REPORT_RESOLVED = "Status: " + ChatColor.GREEN + "resolved" + ChatColor.RESET + " by %s %s ago";
+	String REPORT_RESOLVED = "Status: " + ChatColor.GREEN + "resolved" + ChatColor.RESET + " by %s %s";
 	String REPORT_UNRESOLVED = "Status: " + ChatColor.RED + "unresolved" + ChatColor.RESET;
 	String REPORT_NO_COMMENTS = "There are currently no comments";
 	String REPORT_HAS_COMMENTS = "There are %d comments:";
