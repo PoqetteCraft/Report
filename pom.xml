@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pocketkid2</groupId>
 	<artifactId>report</artifactId>
-	<version>0.1.0-ALPHA</version>
+	<version>0.2.0-ALPHA</version>
 	<name>Report</name>
 	<description>A reporting plugin for Minecraft servers</description>
 	<properties>
